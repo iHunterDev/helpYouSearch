@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>帮你搜索 - 主页</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+	<style type="text/css">
+		body {
+			font-family: "Helvetica Neue", Helvetica, Arial, "STHeiti", "Microsoft Yahei", sans-serif;
+		}
+
+
+		.bg-wz-467b96 {
+			background: #467b96;
+		}
+
+		.fs-wz-12 {
+			font-size: 12px;
+		}
+
+		.main {
+			text-align: center;
+
+			padding: 80px 0;
+
+			color: white;
+
+            min-height: 100vh;
+		}
+
+		.main h1 {
+			font-size: 36px;
+			font-weight: bold;
+		}
+
+		.main h2 {
+			font-size: 24px;
+			font-weight: normal;
+			margin: 20px 0;
+
+			color: #DAE5EA;
+		}
+
+		.footer {
+			padding: 50px 0;
+			background: #333;
+		}
+
+		.footer .github i {
+			font-size: 28px;
+		}
+	</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">帮你搜索</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="./index.php">首页 <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://blog.wz52.cn">惜梦博客</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/wzblog"><i class="bi-github"></i> Github</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="container-fluid bg-wz-467b96">
+	<div class="main col-md-6 offset-md-3">
+		<h1>帮 你 搜 索</h1>
+		<h2>我来“帮你”进行搜索</h2>
+
+		<form id="search">
+			<div class="form-group">
+				<label for="engine">选择搜索引擎</label>
+				<select class="custom-select custom-select-lg" id="engine" name="type">
+					<option selected value="baidu">百度</option>
+					<option value="bing">必应</option>
+					<option value="google">谷歌</option>
+					<option value="sogou">搜狗</option>
+					<option value="360">360</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="search">搜索内容</label>
+				<input type="text" name="query" class="form-control form-control-lg" id="search" placeholder="输入一个问题">
+			</div>
+			
+			<div class="form-group fs-wz-12">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" name="jump" type="checkbox" id="jump" checked>
+					<label class="form-check-label" for="jump">使用跳转页</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn bth-lg btn-warning">生成“教你”搜索地址</button>
+			</div>
+		</form>
+
+		<div class="card invisible" style="margin-top: 80px;" id="resultArea">
+			<div class="card-"></div>
+			<div class="card-body text-dark">
+				<a href="javascript:void(0);" class="card-link btn btn-outline-primary" id="copyLink" data-clipboard-text="">复制地址</a>
+				<a href="" target="_blank" class="card-link btn btn-outline-secondary" id="showDemo">查看效果</a>
+				<hr>
+				<div id="showUrl"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer text-center">
+	<div class="github"><a href="https://github.com/wzblog"><i class="bi-github text-muted"></i></a></div>
+	<div class="copyright text-muted">© 2021 <a href="https://blog.wz52.cn" class="text-muted">惜梦</a>. All rights reserved.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
+<script src="./common.js"></script>
+<script type="text/javascript">
+
+	var clipboard = new ClipboardJS('#copyLink');
+
+	$('#search').submit(function() {
+
+		// 获取表单所有参数
+		var formDataArray = $(this).serializeArray();
+
+		// 遍历生成参数
+		// 将 [{}, {}] 转为 {name: value, name: value}
+		var formData = {};
+
+		for (var i = 0; i < formDataArray.length; i++) {
+			var name = formDataArray[i].name;
+			var value = formDataArray[i].value;
+
+			formData[name] = encodeURI(value);
+		}
+		
+		// 生成搜索url
+		var url = CONFIG.engine[formData.type].format(formData.query);
+
+		// 判断是否使用跳转页
+		if (formData.jump) {
+			url = CONFIG.jumpPage.format(btoa(url), formData.query);
+		}
+
+
+		// 显示到网页中
+		$('#showUrl').html(url);
+
+		// 设置复制属性
+		$('#copyLink').attr('data-clipboard-text', url);
+
+		// 设置演示链接
+		$('#showDemo').attr('href', url);
+		
+		// 显示结果
+		$('#resultArea').removeClass('invisible');
+
+		// 取消默认操作
+		return false;
+	});
+</script>
+</body>
+</html>
