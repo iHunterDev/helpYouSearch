@@ -172,6 +172,15 @@
 		// 显示结果
 		$('#resultArea').removeClass('invisible');
 
+        // 获取结果区域位置
+        var resultAreaOffset = $('#resultArea').offset();
+        
+        // 跳转到结果区域
+        scrollTo({ 
+            top: resultAreaOffset.top, 
+            behavior: "smooth" 
+        });
+
 		// 取消默认操作
 		return false;
 	});
